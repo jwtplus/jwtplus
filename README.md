@@ -4,6 +4,8 @@
 
 # JWTPlus - Enterprise ready platform to manage JWT tokens
 
+📌 **[Read the Docs](https://jwtplus.com/docs)** | 🛠 **[Installation Guide](https://jwtplus.com/docs/install-auto.html)** | 🔥 **[Contribute](https://jwtplus.com/docs/contribute.html)**
+
 Let’s be honest—JWT is powerful, but it’s not perfect. If you’ve worked with JWTs, you know the drill: complex setups, manual token revocation, cryptography headaches. And let’s not forget the ever-growing list of security concerns that crop up every time you integrate JWT into a new project. Sound familiar?
 
 Here’s the laundry list we’ve all had to deal with:
