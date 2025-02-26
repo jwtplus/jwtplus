@@ -1,0 +1,80 @@
+name: Build and Release Go Binary
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Linux Binaries
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [amd64, arm64]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.4'
+
+      - name: Build Binary
+        run: |
+          mkdir -p dist
+          CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
+          go build -tags jsoniter,netgo,osusergo \
+          -ldflags="-linkmode external -extldflags '-static'" \
+          -o dist/jwtplus-${{ matrix.goos }}-${{ matrix.goarch }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jwtplus-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/jwtplus-${{ matrix.goos }}-${{ matrix.goarch }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures all commits are available for logs
+
+      - name: Get Commit Messages
+        id: changelog
+        run: |
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:"- %s" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Download All Binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Archive Binaries
+        run: |
+          cd dist
+          for file in jwtplus-*; do
+            chmod +x "$file"
+            tar -czvf "$file.tar.gz" "$file"
+          done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ env.CHANGELOG }}
+          files: dist/*.tar.gz
+          token: ${{ secrets.GITHUB_TOKEN }}
