@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var AppVersion string = "1.0"
+var AppVersion string = "1.1"
 
 func init() {
 	lib.PerformInit()

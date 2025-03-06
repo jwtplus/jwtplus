@@ -6,8 +6,25 @@ import (
 	"jwtplus/middleware"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
+
+func setCrossOrigin() gin.HandlerFunc {
+	//Default - accept from all origin
+	origins := []string{"*"}
+
+	if lib.Config.IsSet("origins") {
+		origins = lib.Config.GetStringSlice("origins")
+	}
+
+	return cors.New(cors.Config{
+		AllowOrigins:  origins,
+		AllowMethods:  []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:  []string{"Origin"},
+		ExposeHeaders: []string{"Content-Length"},
+	})
+}
 
 func SetupRouter() *gin.Engine {
 
@@ -18,6 +35,9 @@ func SetupRouter() *gin.Engine {
 	engine := gin.New()
 	engine.SetTrustedProxies(nil)
 	engine.Use(gin.Recovery())
+
+	//CORS settings
+	engine.Use(setCrossOrigin())
 	engine.Use(middleware.DefaultStructuredLogger())
 
 	//Load custom form validation rules
@@ -29,14 +49,14 @@ func SetupRouter() *gin.Engine {
 
 	engine.GET("/health", controllers.HealthController)
 
+	// GET /root -> get info about all onboarded app
+	engine.Use(middleware.ValidateRootToken()).GET("/root", controllers.GetAllApps)
+
 	root := engine.Group("/root")
 	root.Use(middleware.ValidateRootToken())
 	{
 		// GET /root/rotate -> rotate root key
 		root.GET("/rotate", controllers.RotateRootKey)
-
-		// GET /root -> get info about all onboarded app
-		root.GET("/", controllers.GetAllApps)
 
 		// POST /root/create -> create new app
 		root.POST("/create", controllers.CreateApp)
