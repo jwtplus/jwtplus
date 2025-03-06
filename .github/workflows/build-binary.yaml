@@ -59,10 +59,8 @@ jobs:
         id: changelog
         run: |
           {
-            echo 'CHANGELOG<<EOF'
             git log $(git describe --tags --abbrev=0 @^)..@ --pretty=format:"- %s"
-            echo 'EOF'
-          } >> "$GITHUB_ENV"
+          } >> ${{ github.workspace }}-CHANGELOG.txt
 
       - name: Download All Binaries
         uses: actions/download-artifact@v4
@@ -80,6 +78,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          body: ${{ env.CHANGELOG }}
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
           files: dist/*.tar.gz
           token: ${{ secrets.GITHUB_TOKEN }}
