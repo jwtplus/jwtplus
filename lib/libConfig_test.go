@@ -17,7 +17,18 @@ func TestLoadConfig(t *testing.T) {
 	// Test Case: Config file exists and loads correctly
 	t.Run("Config - Valid Config File", func(t *testing.T) {
 		// Create a temporary config file
-		content := []byte("server:\n  port: 8080\n  ip: \"127.0.0.1\"\n")
+		content := []byte(`debug: false
+server:
+  ip: 127.0.0.1
+  port: 8080
+origins:
+  - http://localhost
+db:
+  location: 127.0.0.1
+  port: 3306
+  username: jwtengine
+  password: 123456
+  dbname: jwtengine`)
 		err := os.WriteFile("jwtplus.yaml", content, 0644)
 		assert.NoError(t, err, "Failed to create temp config file")
 
@@ -28,6 +39,10 @@ func TestLoadConfig(t *testing.T) {
 		// Check if values are loaded correctly
 		assert.Equal(t, "127.0.0.1", Config.GetString("server.ip"))
 		assert.Equal(t, 8080, Config.GetInt("server.port"))
+
+		// Check if all the validation rules are also pass
+		verifyConfig := VerifyConfig()
+		assert.NoError(t, verifyConfig, "VerifyConfig() should not return an error")
 	})
 
 	// Test Case: Config file missing, should return an error

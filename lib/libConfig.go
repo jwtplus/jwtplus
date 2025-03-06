@@ -16,6 +16,7 @@ func LoadConfig() error {
 	Config.SetConfigType("yaml")
 	Config.AddConfigPath(".")
 	Config.AddConfigPath("/etc/jwtplus/")
+	Config.AddConfigPath("/opt/jwtplus/")
 
 	//Set Defaults
 	Config.SetDefault("debug", false)
@@ -33,6 +34,10 @@ func VerifyConfig() error {
 
 	type IpAdd struct {
 		IP string `validate:"ip"`
+	}
+
+	type Origin struct {
+		URL string `validate:"http_url"`
 	}
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
@@ -62,6 +67,18 @@ func VerifyConfig() error {
 
 		if err := validate.Struct(validateFQDN); err != nil {
 			return fmt.Errorf("%s is not a valid domain name. please set the valid domain.", validateFQDN.FQDN)
+		}
+	}
+
+	if Config.IsSet("origins") {
+		for _, o := range Config.GetStringSlice("origins") {
+			validateOrigins := Origin{
+				URL: o,
+			}
+
+			if err := validate.Struct(validateOrigins); err != nil {
+				return fmt.Errorf("%s is not a valid origin in config, origin must start either with http or https", o)
+			}
 		}
 	}
 
