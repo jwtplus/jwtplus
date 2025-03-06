@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "JWTPlus"
+url: "https://github.com/jwtplus/jwtplus"
+authors:
+- family-names: "JWTPlus"
+  given-names: "Team"
