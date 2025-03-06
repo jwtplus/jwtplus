@@ -49,12 +49,12 @@ func SetupRouter() *gin.Engine {
 
 	engine.GET("/health", controllers.HealthController)
 
-	// GET /root -> get info about all onboarded app
-	engine.Use(middleware.ValidateRootToken()).GET("/root", controllers.GetAllApps)
-
 	root := engine.Group("/root")
 	root.Use(middleware.ValidateRootToken())
 	{
+		// GET /root/list -> get info about all onboarded app
+		root.GET("/list", controllers.GetAllApps)
+
 		// GET /root/rotate -> rotate root key
 		root.GET("/rotate", controllers.RotateRootKey)
 
