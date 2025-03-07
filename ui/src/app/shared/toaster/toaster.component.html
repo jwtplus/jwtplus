@@ -1,0 +1,8 @@
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <ngb-toast *ngFor="let toast of toasterService.toasts" 
+               [class]="toast.classname"
+               [autohide]="false"
+               (hidden)="toasterService.removeToast(toast.text)">
+      {{ toast.text }}
+    </ngb-toast>
+  </div>

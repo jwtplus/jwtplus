@@ -2,3 +2,4 @@
 dist
 openapi-spec
 wrk
+ui/node_module

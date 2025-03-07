@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-center align-center vw-100 vh-100">
+    <div class="card m-auto h-auto" style="width: 500px;">
+        <div class="card-body">
+          <h3 class="card-title">Login</h3>
+          <p>Let's quickly login to your dashboard.</p>
+          <form (ngSubmit)="doLogin()" [formGroup]="formLogin">
+            <div class="mb-3">
+                <label for="loginType" class="form-label">How would you like to login?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="loginType" id="loginType1" value="app" formControlName="loginType">
+                    <label class="form-check-label" for="loginType1">
+                      App User
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="loginType" id="loginType2" value="root" formControlName="loginType">
+                    <label class="form-check-label" for="loginType2">
+                      Root User
+                    </label>
+                </div>
+            </div>
+            <div class="mb-3" *ngIf="formLogin.get('loginType')?.value == 'app'">
+                <label for="appId" class="form-label">App ID</label>
+                <input 
+                    type="text"
+                    class="form-control"
+                    id="appId"
+                    formControlName="appId"
+                    placeholder="Enter you app id"
+                    [class.is-invalid]="formLogin.get('appId')?.touched && formLogin.get('appId')?.invalid"
+                    [class.is-valid]="formLogin.get('appId')?.touched && formLogin.get('appId')?.valid">
+                <div class="invalid-feedback" *ngIf="
+					formLogin.get('appId')?.hasError('required') &&
+					formLogin.get('appId')?.touched">
+						This field is required.
+					</div>
+            </div>
+            <div class="mb-3">
+                <label for="key" class="form-label">Key</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="key" 
+                    formControlName="key" 
+                    placeholder="Enter your key"
+                    [class.is-invalid]="formLogin.get('key')?.touched && formLogin.get('key')?.invalid"
+                    [class.is-valid]="formLogin.get('key')?.touched && formLogin.get('key')?.valid">
+                <div class="invalid-feedback" *ngIf="
+					formLogin.get('key')?.hasError('required') &&
+					formLogin.get('key')?.touched">
+						This field is required.
+					</div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary" [disabled]="!formLogin.valid">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+</div>
