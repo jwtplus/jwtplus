@@ -21,7 +21,7 @@ func setCrossOrigin() gin.HandlerFunc {
 	return cors.New(cors.Config{
 		AllowOrigins:  origins,
 		AllowMethods:  []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:  []string{"Origin"},
+		AllowHeaders:  []string{"Origin", "Authorization"},
 		ExposeHeaders: []string{"Content-Length"},
 	})
 }
